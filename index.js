@@ -1,19 +1,28 @@
 function startProgram() {
  const fs = require("fs");
-const util = require("util");
 const axios = require("axios"); 
 const pdf = require('pdfjs');
+const randomColor = require('randomcolor')
+const inquirer = require('inquirer')
+
+
+
+
 let username;
+let GitHubProfile;
 let userRealName;
 let userLocation;
-let userBIo;
 let numberOfPublicRepos;
 let numebrOfFollowers;
 let numberOfGitHubStars;
 let numberOfUsersFollowing;
-let userFavColor;
+let userFavColor = randomColor( {
+    luminosity:'random',
+    hue:'random'
+});
 
-inquirer.promptUser([{
+
+inquirer.prompt([{
 
         type: "input",
         name: "favoriteColor",
@@ -29,7 +38,7 @@ inquirer.promptUser([{
 .then(function({usernameProvided, favoriteColor}){
     username = usernameProvided;
     userFavColor = favoriteColor;
-    const queryUrl = 'https://api.github.com/users/${username}';
+    const queryUrl = `https://api.github.com/users/${username}`;
     search(queryUrl)
     console.log(usernameProvided, favoriteColor);
 
@@ -42,11 +51,12 @@ function search(URL) {
     .then(function(response){
         userRealName = response.data.name;
         userLocation = response.data.location;
+        GitHubProfile = response.data.html_url;
         userBIo = response.data.bio;
         numberOfPublicRepos = response.data.public_repos;
         numberOfUsersFollowing = response.data.following;
         numebrOfFollowers = response.data.following;
-        console.log(res);
+        console.log(response);
         makeHTMLFile(URL);
 
         
@@ -55,8 +65,10 @@ function search(URL) {
     .catch(function (error) {
         ///this will handle the errors///
         console.log(error);
-        console.log(res);
-    });
+    })
+    .finally(function(){
+        ////the program will always be executed////
+    })
 
 }
 /// Copy HTML file into the code///
@@ -87,7 +99,7 @@ function makeHTMLFile() {
         <div id="user-name"></div>
         <div class="box-container">
             <div class="row">
-                <a href="${userGitHubProfile}">GitHub</a>
+                <a href="${GitHubProfile}">GitHub</a>
                 <a href="https://jalabre1995.github.io/Basic-Portfolio/">Portfolio</a>
                 <a href=""></a>
             </div>
@@ -150,15 +162,9 @@ function makeHTMLFile() {
         
     
 </body>
-<script src="index.js"></script>
 
 </html>
     `
-
-
-
-   
-}
 
 fs.writeFile(`./html${username}.html`, document, function(err) {
     if (err) {
@@ -177,10 +183,12 @@ const options = {
 };
 
 //create the pdf file/////////
-pdf.create(html,options).toFile(`./pdf/${username}.pdf`, function (err, res) {
+pdf.create(html,options).toFile(`./pdfjs/${username}.pdfjs`, function (err, res) {
     if (err) return console.log(err);
-console.log(res);
+console.log(response);
 });
+} 
+
 } startProgram()
 
 
