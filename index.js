@@ -7,7 +7,6 @@ const inquirer = require('inquirer')
 
 
 
-
 let username;
 let GitHubProfile;
 let userRealName;
